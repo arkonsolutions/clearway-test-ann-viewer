@@ -1,0 +1,20 @@
+.page--ready {
+  width: min(100%, 1000px);
+  display: grid;
+  justify-items: center;
+}
+
+.page__surface {
+  position: relative;
+  background: #fff;
+  border-radius: .5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  width: 100%;
+}
+
+.page__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #fff;
+}

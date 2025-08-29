@@ -1,0 +1,13 @@
+.ann-layer { 
+    position: absolute; 
+    inset: 0; 
+    touch-action: none; 
+    user-select: none;
+}
+
+.annotation--draft { 
+    position: absolute; 
+    border: 1.5px dashed #4b9cff; 
+    background: rgba(75,156,255,.08); 
+    border-radius: .25rem; 
+}

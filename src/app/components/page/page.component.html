@@ -1,0 +1,11 @@
+<div class="page page--ready">
+  
+   <div class="page__surface"
+       [style.width.%]="zoom() * 100">
+    
+    <img class="page__img"
+      [src]="page().imageUrl">
+
+    <app-annotation-layer [page]="page()" [zoom]="zoom()" />
+  </div>
+</div>

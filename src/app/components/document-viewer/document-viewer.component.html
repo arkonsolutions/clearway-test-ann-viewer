@@ -1,0 +1,35 @@
+<div class="viewer">
+  @if (loading()) {
+    <div class="viewer__status">Загрузка…</div>
+  } @else if (error()) {
+    <div class="viewer__status viewer__status--error">Ошибка: {{ error() }}</div>
+  } @else if (!doc()) {
+    <div class="viewer__status">Документ не найден</div>
+  } @else {
+    <div class="viewer__pages">
+      @for (page of pages(); track page.number) {
+        @defer (on viewport; prefetch on idle) {
+          <app-page [page]="page" />
+        } @placeholder {
+          <div class="page page--placeholder"
+               [style.--w]="defaultPageW"
+               [style.--h]="defaultPageH">
+            <div class="page__skeleton">Лист {{ page.number }}…</div>
+          </div>
+        } @loading {
+          <div class="page page--placeholder"
+               [style.--w]="defaultPageW"
+               [style.--h]="defaultPageH">
+            <div class="page__skeleton">Загрузка…</div>
+          </div>
+        } @error {
+          <div class="page page--placeholder page--error"
+               [style.--w]="defaultPageW"
+               [style.--h]="defaultPageH">
+            <div class="page__skeleton">Ошибка загрузки листа {{ page.number }}</div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>

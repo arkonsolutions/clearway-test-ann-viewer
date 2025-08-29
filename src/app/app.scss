@@ -1,0 +1,11 @@
+.shell { display: grid; grid-template-rows: auto 1fr; height: 100dvh; }
+
+/* Toolbar */
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .5rem 1rem; border-bottom: 1px solid #e6e6e6; background: #fff; position: sticky; top: 0; z-index: 10; }
+.toolbar__left, .toolbar__right { display: inline-flex; align-items: center; gap: .5rem; }
+.toolbar__btn { border: 1px solid #d0d0d0; background: #fff; border-radius: .5rem; padding: .4rem .7rem; cursor: pointer; }
+.toolbar__btn--primary { background: #1677ff; color: #fff; border-color:#1677ff; }
+.toolbar__zoom { min-width: 3.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+.toolbar__title { margin: 0; font-size: 1.1rem; color: #333; }
+
+.shell__content { overflow: auto; background: #f6f7f9; }

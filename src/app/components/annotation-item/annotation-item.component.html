@@ -1,0 +1,16 @@
+<div class="annotation" [ngStyle]="styleBox()">
+  <div class="annotation__content">
+    @if (editing()) {
+      <!-- <textarea class="annotation__editor" (blur)="commitEdit(($event.target as HTMLTextAreaElement).value)"></textarea> -->
+       <textarea class="annotation__editor" (blur)="commitEdit('asdasd')"></textarea>
+    } @else {
+      <div class="annotation__text" (dblclick)="enableEdit()">{{ ann().text || '— двойной клик для текста —' }}</div>
+    }
+  </div>
+
+  <div class="annotation__controls">
+    <button class="annotation__handle annotation__handle--move" title="Перетащить" (pointerdown)="onDragStart($event)">⠿</button>
+    <button class="annotation__handle annotation__handle--edit" title="Редактировать" (click)="enableEdit()">✎</button>
+    <button class="annotation__handle annotation__handle--delete" title="Удалить" (click)="delete()">✕</button>
+  </div>
+</div>

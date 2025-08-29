@@ -1,0 +1,16 @@
+<div class="ann-layer" 
+  (pointerdown)="onPointerDown($event)" 
+  (pointermove)="onPointerMove($event)" 
+  (pointerup)="onPointerUp()">
+  @for (a of annsOnPage(); track a.id) {
+    <app-annotation-item [ann]="a" [zoom]="zoom()" [attr.data-ann-id]="a.id" />
+  }
+
+  @if (dragging().active) {
+    <div class="annotation annotation--draft"
+         [style.left.%]="Math.min(dragging().startX, dragging().curX) * 100"
+         [style.top.%]="Math.min(dragging().startY, dragging().curY) * 100"
+         [style.width.%]="Math.abs(dragging().curX - dragging().startX) * 100"
+         [style.height.%]="Math.abs(dragging().curY - dragging().startY) * 100"></div>
+  }
+</div>

@@ -1,0 +1,11 @@
+.annotation { position: absolute; border: 2px solid #4b9cff; background: rgba(75,156,255,.12); border-radius: .25rem; box-sizing: border-box; }
+.annotation__content { position: absolute; inset: 0; padding: .25rem; overflow: hidden; }
+.annotation__text { font-size: .85rem; color: #103b6d; line-height: 1.2; }
+.annotation__editor { width: 100%; height: 100%; resize: none; border: none; outline: none; font: inherit; background: transparent; color: #103b6d; }
+
+.annotation__controls { position: absolute; top: 0; right: 0; display: flex; gap: .2rem; }
+.annotation__handle { border: 1px solid #d0d0d0; background: #fff; border-radius: .25rem; padding: .15rem .25rem; cursor: grab; }
+.annotation__handle--edit, .annotation__handle--delete { cursor: pointer; }
+.annotation__handle--move { cursor: grab; }
+
+.annotation:hover .annotation__controls { filter: drop-shadow(0 1px 2px rgba(0,0,0,.12)); }

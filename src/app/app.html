@@ -1,0 +1,17 @@
+<div class="shell">
+  <header class="shell__toolbar toolbar">
+    <div class="toolbar__left">
+      <h1 class="toolbar__title">{{ docTitle() }}</h1>
+    </div>
+    <div class="toolbar__right">
+      <button class="toolbar__btn" type="button" (click)="zoomOut()">−</button>
+      <span class="toolbar__zoom">{{ zoomLabel() }}</span>
+      <button class="toolbar__btn" type="button" (click)="zoomIn()">+</button>
+      <button class="toolbar__btn toolbar__btn--primary" type="button" (click)="save()">Сохранить</button>
+    </div>
+  </header>
+
+  <main class="shell__content">
+    <router-outlet />
+  </main>
+</div>
