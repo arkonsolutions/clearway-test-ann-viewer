@@ -41,13 +41,7 @@ export class AnnotationItemComponent {
     effect(() => {
       const targetId = this.store.targetAnnotationId();
       if (targetId === this.ann().id) {
-        this.editing.set(true);
-        // Убеждаемся, DOM обновлён(рендер произошёл), и в результате textarea присутствует в DOM. после ставим фокус на textarea.
-        afterNextRender(() => {
-          const el = this.editorRef?.nativeElement;
-          el?.focus();
-          el?.select?.();
-        }, {injector: this.injector});
+        this.enableEdit();
         this.store.clearTargetAnnotation();
       }
     });
@@ -101,7 +95,23 @@ export class AnnotationItemComponent {
   onDragEnd() { this.startDragPos = null; }
 
   delete() { this.store.deleteAnnotation(this.ann().id); }
-  enableEdit() { this.editing.set(true); }
+
+  enableEdit() { 
+    this.editing.set(true); 
+    // Убеждаемся, DOM обновлён(рендер произошёл), и в результате textarea присутствует в DOM. после ставим фокус на textarea.
+    afterNextRender(() => {
+      const el = this.editorRef?.nativeElement;
+      if (el != null) {
+        el.textContent = this.ann().text;
+        el.focus();
+
+        // Ставим курсок в конец редактируемой строки
+        const endOfString = el.value.length;
+        el.setSelectionRange(endOfString, endOfString);
+      }
+    }, {injector: this.injector});
+  }
+
   commitEdit(val: string) {
     this.store.updateAnnotation(this.ann().id, { text: val });
     this.editing.set(false);

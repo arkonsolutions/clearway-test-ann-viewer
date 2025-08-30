@@ -17,6 +17,7 @@
     font-size: .85rem; 
     color: #103b6d; 
     line-height: 1.2; 
+     white-space: pre-line; // Выводим переносы строк
 }
 .annotation__editor { 
     width: 100%; 

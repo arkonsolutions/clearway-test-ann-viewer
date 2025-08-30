@@ -7,8 +7,8 @@
       <textarea #editor class="annotation__editor"
                 (blur)="commitEdit(editor.value)"></textarea>
     } @else {
-      <div class="annotation__text" (dblclick)="enableEdit()">
-        {{ ann().text || '— двойной клик для текста —' }}
+      <div class="annotation__text">
+        {{ ann().text }}
       </div>
     }
   </div>
