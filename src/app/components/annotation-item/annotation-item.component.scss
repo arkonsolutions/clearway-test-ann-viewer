@@ -1,11 +1,67 @@
-.annotation { position: absolute; border: 2px solid #4b9cff; background: rgba(75,156,255,.12); border-radius: .25rem; box-sizing: border-box; }
-.annotation__content { position: absolute; inset: 0; padding: .25rem; overflow: hidden; }
-.annotation__text { font-size: .85rem; color: #103b6d; line-height: 1.2; }
-.annotation__editor { width: 100%; height: 100%; resize: none; border: none; outline: none; font: inherit; background: transparent; color: #103b6d; }
+.annotation {
+  position: absolute;
+  border: 2px solid #4b9cff;
+  background: rgba(75,156,255,.12);
+  border-radius: .25rem;
+  box-sizing: border-box;
+  z-index: 1;
+}
 
-.annotation__controls { position: absolute; top: 0; right: 0; display: flex; gap: .2rem; }
-.annotation__handle { border: 1px solid #d0d0d0; background: #fff; border-radius: .25rem; padding: .15rem .25rem; cursor: grab; }
+.annotation__content { 
+    position: absolute; 
+    inset: 0; 
+    padding: .25rem; 
+    overflow: hidden; 
+}
+.annotation__text { 
+    font-size: .85rem; 
+    color: #103b6d; 
+    line-height: 1.2; 
+}
+.annotation__editor { 
+    width: 100%; 
+    height: 100%; 
+    resize: none; 
+    border: none; 
+    outline: none; 
+    font: inherit; 
+    background: transparent; 
+    color: #103b6d; 
+}
+
+.annotation__controls {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, 0);
+  z-index: 2;
+
+  padding: 6px 8px 10px;         
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: .5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease-out;
+}
+.annotation__controls--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.annotation__handle {
+  border: 1px solid #d0d0d0;
+  background: #fff;
+  border-radius: .375rem;
+  padding: .2rem .35rem;
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
 .annotation__handle--edit, .annotation__handle--delete { cursor: pointer; }
 .annotation__handle--move { cursor: grab; }
-
-.annotation:hover .annotation__controls { filter: drop-shadow(0 1px 2px rgba(0,0,0,.12)); }

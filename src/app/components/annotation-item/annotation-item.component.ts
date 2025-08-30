@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DocumentStore } from '../../services/document.store';
 import { AnnEntity } from '../../shared/models';
+import { DocumentStore } from '../../services/document.store';
 
 @Component({
   selector: 'app-annotation-item',
@@ -18,6 +18,13 @@ export class AnnotationItemComponent {
 
   editing = signal(false);
 
+  // ховер-флаги только для рамки и панели
+  hoverBox = signal(false);
+  hoverControls = signal(false);
+
+  // показывать панель, если курсор над рамкой или над панелью
+  showControls = computed(() => this.hoverBox() || this.hoverControls());
+
   styleBox = computed(() => ({
     left: `${this.ann().x * 100}%`,
     top: `${this.ann().y * 100}%`,
@@ -25,16 +32,27 @@ export class AnnotationItemComponent {
     height: `${this.ann().h * 100}%`,
   }));
 
+  // клик вне — скрыть
+  @HostListener('document:pointerdown', ['$event'])
+  onDocPointerDown(ev: PointerEvent) {
+    if (!this.host.nativeElement.contains(ev.target as Node)) {
+      this.hoverBox.set(false);
+      this.hoverControls.set(false);
+    }
+  }
+
+  
+  onBoxEnter(){ this.hoverBox.set(true); }
+  onBoxLeave(){ this.hoverBox.set(false); }
+  onCtrlsEnter(){ this.hoverControls.set(true); }
+  onCtrlsLeave(){ this.hoverControls.set(false); }
+
+  // перетаскивание
   startDragPos: { x: number; y: number } | null = null;
 
   onDragStart(ev: PointerEvent) {
+    if (ev.pointerType === 'mouse' && ev.button !== 0) { ev.preventDefault(); return; }
     ev.preventDefault();
-
-    // Только ЛКМ
-    if (ev.pointerType === 'mouse' && ev.button !== 0) {
-      return;
-    }
-
     (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
     this.startDragPos = { x: ev.clientX, y: ev.clientY };
   }
@@ -42,6 +60,8 @@ export class AnnotationItemComponent {
   @HostListener('pointermove', ['$event'])
   onDragMove(ev: PointerEvent) {
     if (!this.startDragPos) return;
+    if (ev.pointerType === 'mouse' && (ev.buttons & 1) === 0) return;
+
     const layer = this.host.nativeElement.closest('.ann-layer') as HTMLElement;
     if (!layer) return;
     const rect = layer.getBoundingClientRect();
@@ -60,7 +80,6 @@ export class AnnotationItemComponent {
   onDragEnd() { this.startDragPos = null; }
 
   delete() { this.store.deleteAnnotation(this.ann().id); }
-
   enableEdit() { this.editing.set(true); }
   commitEdit(val: string) {
     this.store.updateAnnotation(this.ann().id, { text: val });

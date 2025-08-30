@@ -1,6 +1,13 @@
 .viewer { padding: 1rem; }
-.viewer__pages { display: grid; gap: 1rem; justify-content: center; }
-.viewer__status { padding: 2rem; text-align: center; }
+.viewer__pages { 
+  display: grid; 
+  gap: 1rem; 
+  justify-content: center; 
+}
+.viewer__status { 
+  padding: 2rem; 
+  text-align: center; 
+}
 .viewer__status--error { color: #b00020; }
 
 /* Плейсхолдер — фиксируем ширину и соотношение сторон (A4) */
