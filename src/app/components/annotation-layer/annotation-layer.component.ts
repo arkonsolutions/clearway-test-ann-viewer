@@ -66,7 +66,8 @@ export class AnnotationLayerComponent {
     const w = Math.abs(curX - startX);
     const h = Math.abs(curY - startY);
 
-    if (w < 0.01 && h < 0.01) return; // защита от случайного клика
+    // защита от случайного клика
+    if (w < 0.01 && h < 0.01) return;
 
     const newId = this.store.addAnnotation({
       pageNumber: this.page().number,
@@ -74,12 +75,9 @@ export class AnnotationLayerComponent {
       text: ''
     } as AnnEntity);
 
-
-    // При прекращении задания размера прямоульника(клавиша мыши отжата) - открыть на редактирование новую аннотацию. После выполнения текущей макротаски.
-    queueMicrotask(() => {
-      const el = document.querySelector(`[data-ann-id="${newId}"] .annotation__editor`) as HTMLTextAreaElement | null;
-      el?.focus();
-    });
+    if (newId) {
+      this.store.setTargetAnnotation(newId);
+    }
   }
 
   annsOnPage = computed(() => this.anns().filter(a => a.pageNumber === this.page().number));

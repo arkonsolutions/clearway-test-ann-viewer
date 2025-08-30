@@ -33,6 +33,9 @@ export class DocumentStore {
     readonly pages = computed(() => this._doc()?.pages ?? []);
     readonly annotations = computed(() => this._doc()?.annotations ?? []);
 
+    private _targetAnnotationId = signal<string | null>(null);
+    readonly targetAnnotationId = this._targetAnnotationId.asReadonly();
+
     load(id: string) {
         this._loading.set(true);
         this._error.set(null);
@@ -89,6 +92,15 @@ export class DocumentStore {
         if (!doc) return;
         const newAnnSet = doc.annotations.filter(a => a.id !== id);
         this._doc.set({ ...doc, annotations: newAnnSet });
+    }
+
+    /** Аннотация указывается как редактируемая (текст) в данный момент */
+    setTargetAnnotation(id: string) { 
+        this._targetAnnotationId.set(id); 
+    }
+
+    clearTargetAnnotation() { 
+        this._targetAnnotationId.set(null); 
     }
 
     save() {

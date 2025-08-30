@@ -4,8 +4,8 @@
 
   <div class="annotation__content">
     @if (editing()) {
-      <!-- <textarea class="annotation__editor"
-                (blur)="commitEdit(($event.target as HTMLTextAreaElement).value)"></textarea> -->
+      <textarea #editor class="annotation__editor"
+                (blur)="commitEdit(editor.value)"></textarea>
     } @else {
       <div class="annotation__text" (dblclick)="enableEdit()">
         {{ ann().text || '— двойной клик для текста —' }}

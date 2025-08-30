@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, computed, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, HostListener, Injector, ViewChild, afterNextRender, computed, effect, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AnnEntity } from '../../shared/models';
 import { DocumentStore } from '../../services/document.store';
@@ -11,6 +11,9 @@ import { DocumentStore } from '../../services/document.store';
   styleUrls: ['./annotation-item.component.scss']
 })
 export class AnnotationItemComponent {
+  @ViewChild('editor') editorRef?: ElementRef<HTMLTextAreaElement>;
+  private injector = inject(Injector);
+
   ann = input.required<AnnEntity>();
   zoom = input.required<number>();
   private store = inject(DocumentStore);
@@ -31,6 +34,24 @@ export class AnnotationItemComponent {
     width: `${this.ann().w * 100}%`,
     height: `${this.ann().h * 100}%`,
   }));
+
+  constructor() {
+    // Обработка установки аннотации (id), как редактируемой в данный момент. 
+    // Если редакритуемой должна быть текущая - отображаем поле редакора текта
+    effect(() => {
+      const targetId = this.store.targetAnnotationId();
+      if (targetId === this.ann().id) {
+        this.editing.set(true);
+        // Убеждаемся, DOM обновлён(рендер произошёл), и в результате textarea присутствует в DOM. после ставим фокус на textarea.
+        afterNextRender(() => {
+          const el = this.editorRef?.nativeElement;
+          el?.focus();
+          el?.select?.();
+        }, {injector: this.injector});
+        this.store.clearTargetAnnotation();
+      }
+    });
+  }
 
   // клик вне — скрыть
   @HostListener('document:pointerdown', ['$event'])
