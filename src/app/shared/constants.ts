@@ -3,3 +3,7 @@
 export const DEFAULT_PAGE_WIDTH = 210;
 /** Высота дефолтной страницы, мм */
 export const DEFAULT_PAGE_HEIGHT = 297;
+
+
+/** Минимальный размер аннотации относительно высоты/ширины листа (0..1) = 2% */
+export const MIN_ANNOTATION_SIZE = 0.02;

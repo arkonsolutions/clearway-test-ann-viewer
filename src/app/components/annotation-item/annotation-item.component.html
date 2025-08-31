@@ -1,11 +1,11 @@
 <div class="annotation"
      [ngStyle]="styleBox()"
-     (mouseenter)="onBoxEnter()" (mouseleave)="onBoxLeave()">
+     (mouseenter)="onBoxEnter()" 
+     (mouseleave)="onBoxLeave()">
 
   <div class="annotation__content">
     @if (editing()) {
-      <textarea #editor class="annotation__editor"
-                (blur)="commitEdit(editor.value)"></textarea>
+      <textarea #editor class="annotation__editor" (blur)="commitEdit()"></textarea>
     } @else {
       <div class="annotation__text">
         {{ ann().text }}
@@ -16,11 +16,17 @@
   <div class="annotation__controls"
        [class.annotation__controls--visible]="showControls()"
        (mouseenter)="onCtrlsEnter()" (mouseleave)="onCtrlsLeave()">
-    <button class="annotation__handle annotation__handle--move" title="Перетащить"
-            (pointerdown)="onDragStart($event)">✥</button>
-    <button class="annotation__handle annotation__handle--edit" title="Редактировать"
-            (click)="enableEdit()">✎</button>
-    <button class="annotation__handle annotation__handle--delete" title="Удалить"
-            (click)="delete()">✕</button>
+    <button class="annotation__handle annotation__handle--move" title="Перетащить" (pointerdown)="onDragStart($event)">✥</button>
+    @if (!editing()) {
+      <button class="annotation__handle annotation__handle--edit" title="Редактировать" (click)="enableEdit()">✎</button>
+    } @else {
+      <button class="annotation__handle annotation__handle--commit" title="Применить" (click)="commitEdit()">✓</button>
+    }
+    <button class="annotation__handle annotation__handle--delete" title="Удалить" (click)="delete()">✕</button>
   </div>
+
+  <button class="annotation__handle annotation__resize"
+          [class.annotation__resize--visible]="showControls()"
+          title="Изменить размер"
+          (pointerdown)="onResizeStart($event)">⤡</button>
 </div>

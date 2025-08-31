@@ -64,5 +64,23 @@
   cursor: grab;
   box-shadow: 0 1px 2px rgba(0,0,0,.08);
 }
-.annotation__handle--edit, .annotation__handle--delete { cursor: pointer; }
+.annotation__handle--edit, .annotation__handle--commit, .annotation__handle--delete { cursor: pointer; }
 .annotation__handle--move { cursor: grab; }
+.annotation__handle--commit { color: green; }
+
+
+.annotation__resize {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  padding: .2rem .35rem;
+  cursor: se-resize;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .12s ease-out;
+}
+.annotation__resize--visible {
+  opacity: 1;
+  pointer-events: auto;
+}

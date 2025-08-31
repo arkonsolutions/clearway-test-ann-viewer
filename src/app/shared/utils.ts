@@ -6,3 +6,7 @@ export function genId(): string {
         return v.toString(16);
     });
 }
+
+
+/** Значение (value) меньше минимального (min) - устанавливается в минимальное. Больше максимального (max) - устанавливается в максимальное */
+export const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));

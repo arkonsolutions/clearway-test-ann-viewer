@@ -2,6 +2,8 @@ import { Component, ElementRef, HostListener, Injector, ViewChild, afterNextRend
 import { CommonModule } from '@angular/common';
 import { AnnEntity } from '../../shared/models';
 import { DocumentStore } from '../../services/document.store';
+import { MIN_ANNOTATION_SIZE } from '../../shared/constants';
+import { clamp } from '../../shared/utils';
 
 @Component({
   selector: 'app-annotation-item',
@@ -35,6 +37,16 @@ export class AnnotationItemComponent {
     height: `${this.ann().h * 100}%`,
   }));
 
+  private dragPointerId: number | null = null;
+  private resizePointerId: number | null = null;
+  /** Ссылка на перетаскиваемый в данный момент элемент */
+  private captureEl: HTMLElement | null = null;
+  /** Ссылка на элемент Annotation layer */
+  private layerEl: HTMLElement | null = null;
+
+  private dragStartPos: { x: number; y: number } | null = null;
+  private resizeStartPos: { startX: number; startY: number; baseW: number; baseH: number } | null = null;
+
   constructor() {
     // Обработка установки аннотации (id), как редактируемой в данный момент. 
     // Если редакритуемой должна быть текущая - отображаем поле редакора текта
@@ -62,37 +74,121 @@ export class AnnotationItemComponent {
   onCtrlsEnter(){ this.hoverControls.set(true); }
   onCtrlsLeave(){ this.hoverControls.set(false); }
 
-  // перетаскивание
-  startDragPos: { x: number; y: number } | null = null;
-
   onDragStart(ev: PointerEvent) {
-    if (ev.pointerType === 'mouse' && ev.button !== 0) { ev.preventDefault(); return; }
     ev.preventDefault();
-    (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId);
-    this.startDragPos = { x: ev.clientX, y: ev.clientY };
+    if (ev.pointerType === 'mouse' && ev.button !== 0) { 
+      return; 
+    }
+    const el = ev.currentTarget as HTMLElement;
+    el.setPointerCapture(ev.pointerId);
+    this.captureEl = el;
+    this.dragPointerId = ev.pointerId;
+    this.dragStartPos = { 
+      x: ev.clientX, 
+      y: ev.clientY 
+    };
+  }
+
+  onResizeStart(ev: PointerEvent) {
+    ev.preventDefault(); 
+    if (ev.pointerType === 'mouse' && ev.button !== 0) { 
+      return; 
+    }
+    const el = ev.currentTarget as HTMLElement;
+    el.setPointerCapture(ev.pointerId);
+    this.captureEl = el;
+    this.resizePointerId = ev.pointerId;
+    const a = this.ann();
+    this.resizeStartPos = { 
+      startX: ev.clientX, 
+      startY: ev.clientY, 
+      baseW: a.w, 
+      baseH: a.h 
+    };
   }
 
   @HostListener('pointermove', ['$event'])
-  onDragMove(ev: PointerEvent) {
-    if (!this.startDragPos) return;
-    if (ev.pointerType === 'mouse' && (ev.buttons & 1) === 0) return;
+  onPointerMove(ev: PointerEvent) {
 
-    const layer = this.host.nativeElement.closest('.ann-layer') as HTMLElement;
-    if (!layer) return;
-    const rect = layer.getBoundingClientRect();
-    const dx = (ev.clientX - this.startDragPos.x) / rect.width;
-    const dy = (ev.clientY - this.startDragPos.y) / rect.height;
+    if (!this.layerEl) {
+      this.layerEl = this.host.nativeElement.closest('.ann-layer') as HTMLElement;
+    }
+    if (!this.layerEl) return;
+    const rect = this.layerEl.getBoundingClientRect();
 
-    const a = this.ann();
-    this.store.updateAnnotation(a.id, {
-      x: Math.max(0, Math.min(1 - a.w, a.x + dx)),
-      y: Math.max(0, Math.min(1 - a.h, a.y + dy))
-    });
-    this.startDragPos = { x: ev.clientX, y: ev.clientY };
+    if (this.resizeStartPos) {
+
+      // ev.buttons - битовая маска зажатых кнопок. 1 - левая КМ.
+      // При ведении курсора отпущена ЛКМ - прекратить ресайз
+      if (ev.pointerType === 'mouse' && (ev.buttons & 1) === 0) return;
+
+      const dx = (ev.clientX - this.resizeStartPos.startX) / rect.width;
+      const dy = (ev.clientY - this.resizeStartPos.startY) / rect.height;
+
+      const a = this.ann();
+      const newW = clamp(
+        this.resizeStartPos.baseW + dx,
+        MIN_ANNOTATION_SIZE,
+        1 - a.x
+      );
+      const newH = clamp(
+        this.resizeStartPos.baseH + dy,
+        MIN_ANNOTATION_SIZE,
+        1 - a.y
+      );
+
+      this.store.updateAnnotation(a.id, { w: newW, h: newH });
+      return;
+    }
+
+    if (this.dragStartPos) {
+      // При ведении курсора отпущена ЛКМ - прекратить перетаскивание
+      if (ev.pointerType === 'mouse' && (ev.buttons & 1) === 0) return;
+
+      const dx = (ev.clientX - this.dragStartPos.x) / rect.width;
+      const dy = (ev.clientY - this.dragStartPos.y) / rect.height;
+
+      const a = this.ann();
+      this.store.updateAnnotation(a.id, {
+        x: Math.max(0, Math.min(1 - a.w, a.x + dx)),
+        y: Math.max(0, Math.min(1 - a.h, a.y + dy))
+      });
+      this.dragStartPos = { x: ev.clientX, y: ev.clientY };
+    }
+
+  }
+
+  /** Снимаем захват, установленный setPointerCapture */
+  private releasePointerCapture() {
+    const id = this.resizePointerId ?? this.dragPointerId;
+    if (this.captureEl && id != null && this.captureEl.hasPointerCapture(id)) {
+      this.captureEl.releasePointerCapture(id);
+    }
+    this.captureEl = null;
+    this.dragPointerId = null;
+    this.resizePointerId = null;
   }
 
   @HostListener('pointerup')
-  onDragEnd() { this.startDragPos = null; }
+  onPointerUp() { 
+    this.releasePointerCapture();
+    this.dragStartPos = null;
+    this.resizeStartPos = null;
+  }
+
+  @HostListener('pointercancel')
+  onPointerCancel() {
+    this.releasePointerCapture();
+    this.dragStartPos = null;
+    this.resizeStartPos = null;
+  }
+
+  @HostListener('lostpointercapture')
+  onLostPointerCapture() {
+    this.releasePointerCapture();
+    this.dragStartPos = null;
+    this.resizeStartPos = null;
+  }
 
   delete() { this.store.deleteAnnotation(this.ann().id); }
 
@@ -112,8 +208,10 @@ export class AnnotationItemComponent {
     }, {injector: this.injector});
   }
 
-  commitEdit(val: string) {
-    this.store.updateAnnotation(this.ann().id, { text: val });
+  commitEdit() {
+    if (!!this.editorRef) {
+      this.store.updateAnnotation(this.ann().id, { text: this.editorRef.nativeElement.value });
+    }
     this.editing.set(false);
   }
 }
