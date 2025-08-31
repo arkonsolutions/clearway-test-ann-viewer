@@ -3,7 +3,7 @@
   (pointermove)="onPointerMove($event)" 
   (pointerup)="onPointerUp()">
   @for (a of annsOnPage(); track a.id) {
-    <app-annotation-item [ann]="a" [zoom]="zoom()" [attr.data-ann-id]="a.id" />
+    <app-annotation-item [ann]="a" [attr.data-ann-id]="a.id" />
   }
 
   @if (dragging().active) {

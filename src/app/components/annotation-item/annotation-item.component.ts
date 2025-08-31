@@ -17,7 +17,6 @@ export class AnnotationItemComponent {
   private injector = inject(Injector);
 
   ann = input.required<AnnEntity>();
-  zoom = input.required<number>();
   private store = inject(DocumentStore);
   private host = inject(ElementRef<HTMLElement>);
 

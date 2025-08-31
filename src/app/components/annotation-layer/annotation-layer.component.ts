@@ -23,12 +23,14 @@ export class AnnotationLayerComponent {
   Math = Math;
 
   page = input.required<PageEntity>();
-  zoom = input.required<number>();
 
   private store = inject(DocumentStore);
   anns = this.store.annotations;
 
   dragging = signal<DragState>({ active: false, startX: 0, startY: 0, curX: 0, curY: 0 });
+
+  private addDragPointerId: number | null = null;
+  private captureLayerEl: HTMLElement | null = null;
 
   // Начало создания аннотации по пустой области
   onPointerDown(e: PointerEvent) {
@@ -45,7 +47,10 @@ export class AnnotationLayerComponent {
     const x = (e.clientX - box.left) / box.width;
     const y = (e.clientY - box.top) / box.height;
     this.dragging.set({ active: true, startX: x, startY: y, curX: x, curY: y });
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    
+    this.captureLayerEl = e.currentTarget as HTMLElement;
+    this.captureLayerEl.setPointerCapture(e.pointerId);
+    this.addDragPointerId = e.pointerId;
   }
 
   onPointerMove(e: PointerEvent) {
@@ -65,6 +70,13 @@ export class AnnotationLayerComponent {
     const y = Math.min(startY, curY);
     const w = Math.abs(curX - startX);
     const h = Math.abs(curY - startY);
+
+    // Релизим поинтер
+    if (this.captureLayerEl && !!this.addDragPointerId && this.captureLayerEl.hasPointerCapture(this.addDragPointerId)) {
+      this.captureLayerEl.releasePointerCapture(this.addDragPointerId);
+    }
+    this.captureLayerEl = null;
+    this.addDragPointerId = null;
 
     // защита от случайного клика
     if (w < 0.01 && h < 0.01) return;
