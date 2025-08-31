@@ -1,14 +1,21 @@
 # clearway-test-ann-viewer
-Тестовый проект по заданию от ClearWay.
+Тестовый проект по заданию от ClearWay.  
+[ДЕМО](https://arkonsolutions.github.io/clearway-test-ann-viewer)  
 
 # Стек 
 * Angular 20
 
-# Развёртывание
+# Настройка окружения
 * Требуется Node.js весии >= 20.19
   ```
   Для переключения и установки последних версий нод удобно использовать Node Version Manager (https://github.com/coreybutler/nvm-windows/releases). ..."nvm install 20.19" -> "nvm use 20.19"
   ```
+
+# Развёртывание
+* Развёртывание в hg-pages
+  1) ``ng build --configuration production --base-href /clearway-test-ann-viewer/``
+  2) ``npx angular-cli-ghpages --dir=dist/crearway-test-ann-viewer/browser``
+  3) Приложение будет доступно по адресу ``https://arkonsolutions.github.io/clearway-test-ann-viewer/``.
 
 # Ограничения
 * Нельзя использовать внешние библиотеки, кроме UI китов.
